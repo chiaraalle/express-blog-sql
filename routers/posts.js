@@ -4,16 +4,6 @@ const posts = require('../data/posts');
 const postsController = require('../controllers/postsController');
 const connection = require('../data/db');
 
-router.get('/api/posts', (req, res) => {
-    connection.query('SELECT * FROM posts', (err, results) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      }
-      res.json(results);
-    });
-  });
-
-
 
 //associo ogni rotta alla sua funzione
 // index

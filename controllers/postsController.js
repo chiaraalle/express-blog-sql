@@ -1,10 +1,17 @@
 const posts = require('../data/posts'); 
+const connection = require('../data/db');
 
 //creo le funzioni delle operazioni CRUD con la loro logica
 // index
 function index(req, res) {
-    res.json(posts);
+    connection.query('SELECT * FROM posts', (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err });
+        }
+        res.json(results);
+    });
 }
+
 // show
 function show(req, res) {
     //res.send('Dettagli del post' + req.params.id);
@@ -83,7 +90,7 @@ function modify(req, res) {
     res.send('Modifica parziale dei posts ' + req.params.id);
 };
 // destroy
-function destroy(req, res) {
+/*function destroy(req, res) {
     //res.send('Eliminazione del post ' + req.params.id);
 
     const id = parseInt(req.params.id)
@@ -106,6 +113,29 @@ function destroy(req, res) {
     res.sendStatus(204)
     
     console.log(posts)
+}*/
+function destroy(req, res) {
+    const id = req.params.id;
+    
+    // Eseguo la query per eliminare il post dal database
+    connection.query('DELETE FROM posts WHERE id = ?', [id], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Errore durante l\'eliminazione' });
+        }
+
+        // Se non è stato trovato alcun post con quell'ID, restituisce un errore
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                status: 404,
+                error: "Not Found",
+                message: "Post non trovato"
+            });
+        }
+
+        res.sendStatus(204);
+    });
 }
+
 
 module.exports = { index, show, store, update, modify, destroy }
