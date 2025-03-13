@@ -13,7 +13,7 @@ function index(req, res) {
 }
 
 // show
-function show(req, res) {
+/*function show(req, res) {
     //res.send('Dettagli del post' + req.params.id);
     // recupero il parametro dinamico che rappresenta l'id del post e lo converto in numero.
     const id = parseInt(req.params.id) 
@@ -35,7 +35,36 @@ function show(req, res) {
        )
    }
     
+}*/ 
+function show(req, res) {
+    const id = parseInt(req.params.id);
+
+    // Query per recuperare il post con l'ID specificato
+    const query = 'SELECT * FROM posts WHERE id = ?';
+
+    connection.query(query, [id], (err, rows) => {
+        if (err) {
+            return res.status(500).json({
+                status: 500,
+                error: err.message,
+                message: "Errore del server"
+            });
+        }
+
+        // Se non ci sono righe (nessun post trovato)
+        if (rows.length === 0) {
+            return res.status(404).json({
+                status: 404,
+                error: "Not Found",
+                message: "Post non trovato"
+            });
+        }
+
+        // Se il post è stato trovato, viene restituito come JSON
+        res.json(rows[0]);
+    });
 }
+
 // store
 function store(req, res) {
     //res.send('Creazione nuovo post');
